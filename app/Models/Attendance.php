@@ -13,6 +13,7 @@ class Attendance extends Model
         'teacher_id',
         'date',
         'time_in',
+        'time_out',
         'description',
         
     ];

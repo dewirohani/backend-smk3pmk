@@ -18,7 +18,7 @@ class CreateLogbooksTable extends Migration
             $table->foreignId('attendance_id')->constrained('attendances')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('student_id')->constrained('students')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('teacher_id')->constrained('teachers')->onUpdate('cascade')->onDelete('cascade');
-            $table->date('date_of_logbook');
+            $table->date('date');
             $table->string('activity');
             $table->unsignedBigInteger('status_id');
             $table->foreign('status_id')->references('id')->on('logbook_statuses')->onUpdate('cascade')->onDelete('cascade');

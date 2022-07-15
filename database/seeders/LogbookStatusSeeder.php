@@ -3,16 +3,23 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use App\Models\LogbookStatus;
 
 class LogbookStatusSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
+    
     public function run()
     {
-        //
+        $logbookStatus = [
+            [
+                'name' => 'Menunggu',
+            ],
+            [
+                'name' => 'Diterima',
+            ],
+        ];
+        foreach ($logbookStatus as $row){
+            LogbookStatus::create($row);
+        }
     }
 }

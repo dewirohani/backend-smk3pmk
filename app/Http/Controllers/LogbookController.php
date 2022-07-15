@@ -8,7 +8,7 @@ use App\Models\Attendance;
 use App\Models\Teacher;
 use App\Models\Student;
 use App\Http\Requests\LogbookRequest;
-use App\Http\Requests\LogbookStudentRequest;
+// use App\Http\Requests\LogbookStudentRequest;
 use App\Http\Requests\UpdateLogbookRequest;
 use Illuminate\Support\Facades\File;
 use Image;
@@ -18,14 +18,14 @@ class LogbookController extends Controller
    
     public function index()
     {
-        $logbooks = Logbook::with('attendance','student','teacher','logbookStatuses')->orderBy('date_of_logbook')->get();
-        // if (auth()->user()->level_id == 1) {
-        //     $logbooks = Logbook::with('attendance','student','teacher','logbookStatuses')->orderBy('date_of_logbook')->get();
-        // } else if (auth()->user()->level_id == 2 ) {
-        //     $logbooks = Logbook::with('attendance','student','teacher','logbookStatuses')->where('teacher_id', $this->getTeacher()->id)->orderBy('date_of_logbook')->get();
-        // } else if (auth()->user()->level_id == 3) {
-        //     $logbooks = Logbook::with('attendance','student','teacher','logbookStatuses')->where('student_id', $this->getStudent()->id)->orderBy('date_of_logbook')->get();
-        // }
+        // $logbooks = Logbook::with('attendance','student','teacher','logbookStatuses')->orderBy('date')->get();
+        if (auth()->user()->level_id == 1) {
+            $logbooks = Logbook::with('attendance','student','teacher','logbookStatuses')->orderBy('date')->get();
+        } else if (auth()->user()->level_id == 2 ) {
+            $logbooks = Logbook::with('attendance','student','teacher','logbookStatuses')->where('teacher_id', $this->getTeacher()->id)->orderBy('date')->get();
+        } else if (auth()->user()->level_id == 3) {
+            $logbooks = Logbook::with('attendance','student','teacher','logbookStatuses')->where('student_id', $this->getStudent()->id)->orderBy('date')->get();
+        }
 
         return response()->json([
             "success"      => true,
@@ -42,16 +42,18 @@ class LogbookController extends Controller
     public function store(LogbookRequest $request)
     {
         $data = $request->validated();
-        $cekLogbooks = Logbook::where('date_of_logbook',  $data['date_of_logbook'])->where('student_id', $data['student_id'])->first();
+        // dd($data);
+        $cekLogbooks = Logbook::where('date',  $data['date'])->where('student_id', $data['student_id'])->first();
         if (isset($cekLogbooks)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Anda berhasil mengisi logbook',
+                'message' => 'Anda sudah mengisi logbook',
             ], 400);
         }
 
-        $attendanceInfo = Attendance::select('id','teacher_id')->where('date', $data['date'])->where('student_id', $data['student_id'])->first();
-        if(!isset($attendanceInfo)){
+        $attendance = Attendance::select('id','teacher_id')->where('date', $data['date'])->where('student_id', $data['student_id'])->first();
+        // dd($attendance);
+        if(!isset($attendance)){
             return response()->json([
                 'success' => false,
                 'message' => 'Absensi tidak ditemukan, tidak dapat mengisi logbook!',
@@ -70,13 +72,13 @@ class LogbookController extends Controller
         }
 
         $logbook = Logbook::create([
-            'attendance_id'            => $AttendanceInfo->id,
+            'attendance_id'            => $attendance->id,
             'student_id'               => $data['student_id'],
-            'teacher_id'               => $AttendanceInfo->teacher_id,
-            'date_of_logbook'          => $data['date'],
+            'teacher_id'               => $attendance->teacher_id,
+            'date'                     => $data['date'],
             'status_id'                => 1,
-            'file'                     => $data['file'],
             'activity'                 => $data['activity'],
+            'file'                     => $data['file'],
         ]);
 
         if($logbook){
@@ -91,7 +93,7 @@ class LogbookController extends Controller
     {
         $logbook->load('student','teacher','logbookStatuses')->get();
         return response()->json([
-            "success"               => true,
+            "success"     => true,
             'logbook'     => $logbook
         ], 200);
     }
@@ -138,7 +140,7 @@ class LogbookController extends Controller
     {
         $data = $request->validated();
         $student = Student::where('user_id', auth()->user()->id)->first();
-        $cekLogbooks = Logbook::where('date_of_logbook',  $data['date_of_logbook'])->where('student_id', $student->id)->first();
+        $cekLogbooks = Logbook::where('date',  $data['date'])->where('student_id', $student->id)->first();
         if (isset($cekLogbooks)) {
             return response()->json([
                 'success' => false,
@@ -146,8 +148,8 @@ class LogbookController extends Controller
             ], 409);
         }
 
-        $attendanceInfo = Attendance::select('id','teacher_id')->where('date_of_logbook', $data['date_of_logbook'])->where('student_id', $student->id)->first();
-        if(!isset($attendanceInfo)){
+        $attendance = Attendance::select('id','teacher_id')->where('date', $data['date'])->where('student_id', $student->id)->first();
+        if(!isset($attendance)){
             return response()->json([
                 'success' => false,
                 'message' => 'Absensi tidak ditemukan, tidak dapat mengisi logbook!',
@@ -167,10 +169,10 @@ class LogbookController extends Controller
         }
 
         $logbook = Logbook::create([
-            'attendance_id' => $attendanceInfo->id,
+            'attendance_id' => $attendance->id,
             'student_id'               => $student->id,
-            'teacher_id'               => $internshipAttendanceInfo->teacher_id,
-            'date_of_logbook'                     => $data['date_of_logbook'],
+            'teacher_id'               => $attendance->teacher_id,
+            'date'                     => $data['date'],
             'status_id'                => 1,
             'file'                     => $data['file'],
             'activity'                 => $data['activity'],

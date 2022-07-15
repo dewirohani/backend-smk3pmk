@@ -6,14 +6,17 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
 
-class LogbookRequest extends FormRequest
+class InternshipReportStudentRequest extends FormRequest
 {
-
+    /**
+     * Determine if the user is authorized to make this request.
+     *
+     * @return bool
+     */
     public function authorize()
     {
         return true;
     }
-
 
     public function failedValidation(Validator $validator)
     {
@@ -25,10 +28,14 @@ class LogbookRequest extends FormRequest
     public function rules()
     {
         return [
-            'student_id'                => 'required',
-            'date'           => 'required','date',
-            'activity'                  => 'required|string|max:3000',
-            'file'                      => 'file|mimes:jpeg,png,jpg,svg|max:4096',
+            'file'    => 'required|file|mimes:pdf|max:8192',
         ];
     }
+
+    // public function messages()
+    // {
+    //     return [
+    //         'file.max' => "Maximum file size to upload is 8MB (8192 KB).",
+    //     ];
+    // }
 }

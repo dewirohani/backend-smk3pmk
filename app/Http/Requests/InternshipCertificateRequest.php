@@ -26,7 +26,7 @@ class InternshipCertificateRequest extends FormRequest
     {
         return [
             'student_id'  => 'required',
-            'teacher_id'  => 'required',
+            // 'teacher_id'  => 'required',
             'file'        => 'file|mimes:jpeg,png,jpg,svg|max:4096',
         ];
     }

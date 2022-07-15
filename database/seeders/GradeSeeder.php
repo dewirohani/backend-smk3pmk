@@ -31,12 +31,12 @@ class GradeSeeder extends Seeder
                 'description' => '-',
             ],
             [
-                'name' => 'XI Multimedia 1',
+                'name' => 'XI MM 1',
                 'major_id' => '2',
                 'description' => '-',
             ],
             [
-                'name' => 'XI Multimedia 2',
+                'name' => 'XI MM 2',
                 'major_id' => '2',
                 'description' => '-',
             ],

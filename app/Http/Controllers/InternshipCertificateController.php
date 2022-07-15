@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\InternshipCertificate;
+use App\Models\InternshipPlacement;
 use Illuminate\Http\Request;
 use App\Models\Student;
 use App\Models\Teacher;
@@ -32,7 +33,8 @@ class InternshipCertificateController extends Controller
     public function store(InternshipCertificateRequest $request)
     {
         $data = $request->validated();
-        // $studentData = Student::select('grade_id','major_id')->where('id',$data['student_id'])->first();
+        $teacherData = InternshipPlacement::select('teacher_id')->where('student_id',$data['student_id'])->first();
+        // dd($teacherData);
         $data['file'] = null;
         if($request->file('file')){
             $path = 'storage/sertifikat';
@@ -44,10 +46,10 @@ class InternshipCertificateController extends Controller
             })->save($path.'/'.$file_name,80);
             $data['file'] = $path.'/'.$file_name;
         }
-
+     
         $certificate = InternshipCertificate::create([
             'student_id'               => $data['student_id'],
-            'teacher_id'               => $data['teacher_id'],
+            'teacher_id'               => $teacherData->teacher_id,
             'file'                     => $data['file'],
         ]);
 
@@ -74,30 +76,28 @@ class InternshipCertificateController extends Controller
         ], 200);
     }
 
-    public function update(UpdateCertificateRequest $request, InternshipCertificate $internshipCertificate)
+    public function update(UpdateCertificateRequest $request, $id)
     {
-        
+        // dd($data);
+        $internshipCertificate = InternshipCertificate::find($id);
         $data = $request->validated();
-        $data['file'] = null;
-        if($request->file('file')){
+        $file = $request->file('file');
+        if($file){
+            File::delete($internshipCertificate->file);
             $path = 'storage/sertifikat';
             $file = $request->file('file');
             $file_name = time() . str_replace(" ", "", $file->getClientOriginalName());
-            $imageFile = Image::make($file->getRealPath());
-            $imageFile->resize(800, 800, function ($constraint) {
-            $constraint->aspectRatio();
-            })->save($path.'/'.$file_name,80);
+            $file->move($path, $file_name);
             $data['file'] = $path.'/'.$file_name;
+            
         }
-        $internshipCertificate = InternshipCertificate::update([
-            'file'  => $data['file'],
-        ]);
-        dd($internshipCertificate);
+
+        $internshipCertificate->update($data);
 
         if($internshipCertificate){
             return response()->json([
                 'success'=> true,
-                'message' => "Sertifikat berhasil diperbarui"
+                'message' => "Sertifikat berhasil diperbarui!"
             ],200);
         }
 

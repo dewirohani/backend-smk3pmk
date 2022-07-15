@@ -12,7 +12,7 @@ class Logbook extends Model
         'attendance_id',
         'student_id',
         'teacher_id',
-        'date_of_logbook',      
+        'date',      
         'activity',
         'status_id',
         'file',

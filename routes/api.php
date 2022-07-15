@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\{MajorController, GradeController, StudentController, TeacherController};
 use App\Http\Controllers\{
-    InternshipPlaceController,InternshipPlacementController,InternshipSubmissionController,InternshipSubmissionStatusController,InternshipCertificateController
+    InternshipPlaceController,InternshipPlacementController,InternshipSubmissionController,InternshipSubmissionStatusController,InternshipCertificateController, InternshipReportController,InternshipReportStatusController
 };
 use App\Http\Controllers\{
     LogbookController,LogbookStatusController,AttendanceController,PeriodController, PeriodStatusController
@@ -52,12 +52,20 @@ Route::middleware('auth:api')->group(function (){
     Route::get('/submissions',                  [InternshipSubmissionController::class, 'index']);    
     Route::post('/submissions',                 [InternshipSubmissionController::class, 'store']);    
     Route::put('/submissions/{id?}',            [InternshipSubmissionController::class, 'update']);    
+    Route::delete('/submissions/{id?}',         [InternshipSubmissionController::class, 'destroy']);    
     Route::get('/submissions/{id?}/edit',       [InternshipSubmissionController::class, 'edit']);    
     Route::resource('/submissions-statuses',    InternshipSubmissionStatusController::class);    
     Route::resource('/internship-placements',   InternshipPlacementController::class);
     Route::resource('/attendances',             AttendanceController::class);
     Route::resource('/logbooks',                LogbookController::class);
-    Route::resource('/logbooks-statuses',       LogbookStatusController::class);
-    Route::resource('/certificates',            InternshipCertificateController::class);
+    Route::resource('/logbook-statuses',        LogbookStatusController::class);
+    Route::get('/certificates',                  [InternshipCertificateController::class, 'index']);    
+    Route::post('/certificates',                 [InternshipCertificateController::class, 'store']);    
+    Route::put('/certificates/{id?}',            [InternshipCertificateController::class, 'update']);    
+    Route::get('/certificates/{id?}/edit',       [InternshipCertificateController::class, 'edit']);  
+    Route::delete('/certificates/{id?}',         [InternshipCertificateController::class, 'destroy']); 
+    
+    Route::resource('/reports',                InternshipReportController::class);
+    Route::resource('/report-statuses',        InternshipReportStatusController::class);
 });
 

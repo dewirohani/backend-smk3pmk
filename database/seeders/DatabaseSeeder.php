@@ -27,10 +27,10 @@ class DatabaseSeeder extends Seeder
         $this->call(PeriodStatusSeeder::class);
         $this->call(PeriodSeeder::class);
         $this->call(InternshipSubmissionStatusSeeder::class);
+        $this->call(LogbookStatusSeeder::class);
+        $this->call(InternshipReportStatusSeeder::class);
         // $this->call(AttendanceSeeder::class);
-        // $this->call(InternshipCertificateSeeder::class);
         // $this->call(InternshipSubmissionSeeder::class);
         // $this->call(InternshipPlacementSeeder::class);
-        // $this->call(LogbookSeeder::class);
     }
 }

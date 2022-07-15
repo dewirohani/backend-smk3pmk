@@ -108,13 +108,14 @@ class InternshipSubmissionController extends Controller
     public function update($id, UpdateSubmissionRequest $request)
     {
         $internshipSubmission = InternshipSubmission::find($id);
-        $teacher = Teacher::where('user_id', auth()->user()->id)->first();
         $place = InternshipPlace::where('id',$internshipSubmission->internship_place_id)->first();
         $studentData = Student::select('grade_id','major_id')->where('id',$internshipSubmission->student_id)->first();
-        $data = $request->validated();  
+        $teacher = Teacher::where('user_id', auth()->user()->id)->first();
+        // $studentData = Student::;
+        // dd(InternshipSubmission::select('internship_place_id')->first);
+        $data = $request->validated();
+        // dd($data);
         if ($request->status_id == '2') {
-            DB::beginTransaction();
-            try {
                 $internshipSubmission->update($data);
                 $internshipPlacement = InternshipPlacement::create([
                     'internship_submission_id' => $internshipSubmission->id,
@@ -134,33 +135,16 @@ class InternshipSubmissionController extends Controller
                     'authorized_by' => $teacher->id,
                 ]);
 
-                DB::commit();
-
                 return response()->json([
                     'success' => true,
                     'message' => "Pengajuan berhasil diperbarui!"
                 ],200);
-            } catch (\Exception $exception) {
-                DB::rollback();
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Data gagal diperbarui!',
-                 ], 400);
-            }       
-        }else if ($request->status_id == '3') {
-            $data['authorized_by'] = $teacher->id;
-            $internshipSubmission->update($data);
-            return response()->json([
-                'success' => true,
-                'message' => "Pengajuan berhasil diperbarui!"
-            ],200);
-        }else{
-            $internshipSubmission->update($data);
-            return response()->json([
-                'success' => true,
-                'message' => "Pengajuan berhasil diperbarui!"
-            ],200);
         }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Data gagal diperbarui!',
+         ], 400);
     }
 
     public function destroy($id)
